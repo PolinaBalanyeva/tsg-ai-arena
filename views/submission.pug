@@ -1,0 +1,61 @@
+extends layout
+
+include mixins
+
+block content
+  .container.content
+    .page-header
+      h1
+        | Submission by
+        = ' '
+        = submission.user.name()
+
+    if user && user.admin && submission.error && submission.error.stack
+      pre= submission.error.stack
+
+    if submission.isViewableBy(user) || contest.isEnded()
+      p
+        pre!= submission.getHighlight()
+
+    h2 Battle History
+
+    .table-responsive
+      table.table
+        thead
+          tr
+            if contest.type === 'battle'
+              th Opponent
+            th Config
+            if contest.type === 'battle'
+              th Result
+            else if contest.type === 'score'
+              th Score
+            th Date
+        tbody
+          each battle in battles
+            tr
+              if contest.type === 'battle'
+                td
+                  if battle.isPreset
+                    | Preset
+                  else
+                    = battle.getOpponents(submission) && battle.getOpponents(submission)[0].userText()
+              td= battle.configText(contest)
+              if contest.type === 'battle'
+                td
+                  if battle.result === 'pending'
+                    | Pending
+                  else if battle.result === 'running'
+                    | Running
+                  else if battle.result === 'draw'
+                    | Draw
+                  else if battle.result === 'settled'
+                    if battle.getWinner()._id.equals(submission._id)
+                      | Win
+                    else
+                      | Lose
+              else if contest.type === 'score'
+                td= battle.scoreText()
+              td
+                a(href=`/contests/${contest.id}/battles/${battle._id}`)= battle.timeText()
+                

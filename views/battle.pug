@@ -1,0 +1,55 @@
+extends layout
+
+include mixins
+
+block content
+  .container.content
+    .page-header
+      h1= battle.versusText()
+    
+    if contest.isEnded() || battle.isViewableBy(user)
+      a.btn.btn-primary.btn-lg(href=`/contests/${contest.id}/battles/${battle._id}/visualizer`, style={margin: '1em 0'}) Launch Visualizer
+
+    if contest.type === 'battle'
+      h3 Result
+
+      p
+        if battle.result === 'pending'
+          | Pending
+        else if battle.result === 'running'
+          | Running
+        else if battle.result === 'draw'
+          | Draw
+        else if battle.result === 'settled'
+          = battle.getWinner().userText()
+          = ' '
+          | Won
+        
+    if contest.type === 'score'
+      h3 Score
+      
+      p= battle.scores[0]
+
+    if contest.isEnded() || battle.isViewableBy(user)
+      h3 Turns
+
+      .table-responsive
+        table.table.table-sm
+          thead
+            tr
+              th #
+              th Player
+              th Output
+              th Date
+          tbody
+            each turn in turns
+              tr
+                td= turn.index
+                td
+                  if turn.getSubmission().isPreset
+                    = turn.getSubmission().userText()
+                  else
+                    a(href=`/contests/${contest.id}/submissions/${turn.getSubmission()._id}`)= turn.getSubmission().userText()
+                td= (turn.stdout || '').slice(0, 24)
+                td
+                  a(href=`/contests/${contest.id}/turns/${turn._id}`)= turn.timeText()

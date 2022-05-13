@@ -1,0 +1,18 @@
+{
+    "extends": "@hakatashi",
+    "parserOptions": {
+        "parser": "babel-eslint",
+        "ecmaVersion": 9
+    },
+    "rules": {
+        "camelcase": "off",
+        "no-console": "off",
+        "max-len": "off",
+        "max-depth": "off",
+        "no-underscore-dangle": "off",
+        "prefer-destructuring": "off",
+        "private-props/no-use-outside": "off",
+        "react/forbid-component-props": "off",
+        "react/jsx-handler-names": "off"
+    }
+}
