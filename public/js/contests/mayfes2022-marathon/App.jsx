@@ -108,20 +108,54 @@ class App extends React.Component {
       this.svgRef.current.appendChild(el)
       return el
   })
-    this.costLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-    this.costLabel.setAttribute('x',`${this.itemOffsetWidth - 30}px`)
-    this.costLabel.setAttribute('y', `${this.itemOffsetHeight - 14}px`)
-    this.costLabel.setAttribute('font-size','10px')
-    this.costLabel.innerHTML = 'cost:'
-    this.costSoFar = 0
-    this.svgRef.current.appendChild(this.costLabel)
-    this.costSoFarView = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-    this.costSoFarView.setAttribute('x',`${this.itemOffsetWidth + this.state.n * 12 - 40}px`)
-    this.costSoFarView.setAttribute('y', `${this.itemOffsetHeight + 50}px`)
-    this.costSoFarView.setAttribute('font-size','40px')
-    this.costSoFarView.innerHTML = this.costSoFar
-    this.svgRef.current.appendChild(this.costSoFarView)
-    this.costels = this.state.cost.map((x,index) => {
+  this.costLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+  this.costLabel.setAttribute('x',`${this.itemOffsetWidth - 30}px`)
+  this.costLabel.setAttribute('y', `${this.itemOffsetHeight - 14}px`)
+  this.costLabel.setAttribute('font-size','10px')
+  this.costLabel.innerHTML = 'cost:'
+  this.svgRef.current.appendChild(this.costLabel)
+  this.costSoFarLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+  this.costSoFarLabel.setAttribute('x',`${this.itemOffsetWidth - 30}px`)
+  this.costSoFarLabel.setAttribute('y', `${this.itemOffsetHeight + 48}px`)
+  this.costSoFarLabel.setAttribute('font-size','40px')
+  this.costSoFarLabel.innerHTML = 'total cost:'
+  this.svgRef.current.appendChild(this.costSoFarLabel)
+  this.costSoFar = 0
+  this.costSoFarView = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+  this.costSoFarView.setAttribute('x',`${this.itemOffsetWidth +180 }px`)
+  this.costSoFarView.setAttribute('y', `${this.itemOffsetHeight + 48}px`)
+  this.costSoFarView.setAttribute('font-size','40px')
+  this.costSoFarView.innerHTML = this.costSoFar
+  this.svgRef.current.appendChild(this.costSoFarView)
+  this.inversionCountLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+  this.inversionCountLabel.setAttribute('x',`${this.itemOffsetWidth - 30}px`)
+  this.inversionCountLabel.setAttribute('y', `${this.itemOffsetHeight + 96}px`)
+  this.inversionCountLabel.setAttribute('font-size','40px')
+  this.inversionCountLabel.innerHTML = 'inversion count:'
+  this.svgRef.current.appendChild(this.inversionCountLabel)
+  this.inversionCount = contest.inverseCount(this.state.perm,this.state.n)
+  this.inversionCountView = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+  this.inversionCountView.setAttribute('x',`${this.itemOffsetWidth + 280 }px`)
+  this.inversionCountView.setAttribute('y', `${this.itemOffsetHeight + 96}px`)
+  this.inversionCountView.setAttribute('font-size','40px')
+  this.inversionCountView.innerHTML = this.inversionCount
+  this.svgRef.current.appendChild(this.inversionCountView)
+  this.scoreLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+  this.scoreLabel.setAttribute('x',`${this.itemOffsetWidth - 30}px`)
+  this.scoreLabel.setAttribute('y', `${this.itemOffsetHeight + 144}px`)
+  this.scoreLabel.setAttribute('font-size','40px')
+  this.scoreLabel.innerHTML = 'score:'
+  this.svgRef.current.appendChild(this.scoreLabel)
+  this.score = Math.floor(10 ** 5 * this.state.cost.reduce(function(sum, element){
+    return sum + element
+  }, 0) ** 2 / (1+(this.costSoFar + this.inversionCount * 200)** 2))
+  this.scoreView = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+  this.scoreView.setAttribute('x',`${this.itemOffsetWidth +100 }px`)
+  this.scoreView.setAttribute('y', `${this.itemOffsetHeight + 144}px`)
+  this.scoreView.setAttribute('font-size','40px')
+  this.scoreView.innerHTML = this.score
+  this.svgRef.current.appendChild(this.scoreView)
+  this.costels = this.state.cost.map((x,index) => {
     const costel = document.createElementNS('http://www.w3.org/2000/svg', 'text')
     costel.setAttribute('width', '20px')
     costel.setAttribute('height', '20px')
@@ -133,8 +167,8 @@ class App extends React.Component {
     
     this.svgRef.current.appendChild(costel)
     return costel
-    })
-  }
+  })
+}
 
   forwardStep () {
     const { left, right } = this.state.operations[this.state.operatingIndex]
@@ -188,7 +222,13 @@ class App extends React.Component {
       this.costSoFar += this.state.cost.slice(left,right).reduce(function(sum, element){
         return sum + element
       }, 0)
+      this.inversionCount = contest.inverseCount(this.state.perm,this.state.n)
+      this.score = Math.floor(10 ** 5 * this.state.cost.reduce(function(sum, element){
+        return sum + element
+      }, 0) ** 2 / (1+(this.costSoFar + this.inversionCount * 200)** 2))
       this.costSoFarView.innerHTML = this.costSoFar
+      this.scoreView.innerHTML = this.score
+      this.inversionCountView.innerHTML = this.inversionCount
       
         
     this.setState({

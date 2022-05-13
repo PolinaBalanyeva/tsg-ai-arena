@@ -43,7 +43,7 @@ mongoose.Promise = global.Promise;
 	await Contest.updateOne({id: 'mayfes2022-marathon'}, {
 		name: 'TSG LIVE! 8 Live Programming Contest Marathon Match',
 		id: 'mayfes2022-marathon',
-		start: new Date('2022-05-11T12:33:00+0900'),
+		start: new Date('2022-05-15T12:33:00+0900'),
 		end: new Date('2022-05-15T14:03:00+0900'),
 		type: 'score',
 		description: {
