@@ -62,7 +62,7 @@ $l_M\ r_M$
 なお、 $M,l_i,r_i$ は以下の条件を満たしている必要がある。条件を満たしていない提出は受理されない。
 - 出力はすべて非負の整数
 - $1 \leq M \leq \frac{N(N+1)}{2}$
-- $1 \leq l_i \leq r_i \leq N$
+- $1 \leq l_i \leq r_i \leq N$  $(1 \leq i \leq M)$
 
 ## テストケース内訳
 テストケースは合計 $50$ 個ある。テストケース 1 ～ 3 はwriterが任意に与えたもので、テストケース 4 ～ 50 はテストケース生成プログラムが $1,\ldots,N$をランダムにシャッフルして出力したケースである。
@@ -144,8 +144,8 @@ $T$番目のテストケースにおける点数 $\mathrm{Score}(T)$ は以下�
 - $\mathrm{Score}(T) = 0$
 
 出力が条件を満たしている場合
-- 転倒数が$K$を超える区間指定を無視して出力の操作を行なった後の数列の転倒数が$I$、転倒数が$K$を超える区間指定の分を含むコストの合計が $C$である時
-$\displaystyle \mathrm{Score}(T) = \left\lfloor\frac{10^5\times(\sum_{i=1}^nC_i)^2}{1+(C+I\times 100)^2}\right\rfloor$
+- 転倒数が$K$を超える区間指定を無視して出力の操作を行った後の数列の転倒数が$I$、転倒数が$K$を超える区間指定の分を含むコストの合計が $C$であるとき、
+$\displaystyle \mathrm{Score}(T) = \left\lfloor\frac{10^5\times(\sum_{i=1}^nC_i)^2}{1+(C+I\times 200)^2}\right\rfloor$
 
 
 一回の提出におけるスコアは、$\displaystyle \sum_{T=1}^{50} \mathrm{Score}(T)$ によって計算される。

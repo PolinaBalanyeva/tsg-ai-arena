@@ -34,11 +34,14 @@ class App extends React.Component {
     this.svgRef = React.createRef()
     
     let operations
+    let m
     try{
       operations = contest.parseOutput(output, n)
+      m = parseInt(output.toString().split('\n')[0])
     }catch(e){
       alert(e)
       operations = []
+      m = 0
     }
 
     this.displayWidth = 1000
@@ -51,7 +54,7 @@ class App extends React.Component {
     console.log('Input:')
     console.log(input)
     console.log('Output:')
-    console.log(output)
+    console.log(output,)
 
     this.state = {
       playing: false,
@@ -61,6 +64,7 @@ class App extends React.Component {
       n,
       k,
       operations,
+      m,
       initialPerm: _.cloneDeep(perm),
       operatingIndex: 0,
     }
@@ -108,6 +112,12 @@ class App extends React.Component {
       this.svgRef.current.appendChild(el)
       return el
   })
+  this.kView = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+  this.kView.setAttribute('x',`${this.itemOffsetWidth - 30}px`)
+  this.kView.setAttribute('y', `${this.itemOffsetHeight - 60}px`)
+  this.kView.setAttribute('font-size','40px')
+  this.kView.innerHTML = `k: ${this.state.k}`
+  this.svgRef.current.appendChild(this.kView)
   this.costLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text')
   this.costLabel.setAttribute('x',`${this.itemOffsetWidth - 30}px`)
   this.costLabel.setAttribute('y', `${this.itemOffsetHeight - 14}px`)
@@ -187,6 +197,10 @@ class App extends React.Component {
         cb(to)
       }
     }
+      for (let i = 0; i < this.state.n; i++){
+        this.els[i].setAttribute('fill','black')
+        this.costels[i].setAttribute('fill','black')
+      }
       const temp = [...this.els]
       const permtemp = [...(this.state.perm)]
       const permtemp0 = permtemp.slice(0, left)
@@ -200,22 +214,16 @@ class App extends React.Component {
         col = '#00ff00'
       }
       let dictpermtemp1sorted = {}
-      for (let i = 0; i < this.state.n; i++){
-        this.els[i].setAttribute('fill','black')
-        this.costels[i].setAttribute('fill','black')
-      }
       for (let i = left; i < right; i++){
         dictpermtemp1sorted[permtemp1sorted[i - left]]=i
         temp[i].setAttribute('fill',col)
         this.costels[i].setAttribute('fill','#ff00ff')
-        this.els[i].setAttribute('fill-opacity',1)
       }
       for (let i = left; i < right; i++){
         animateObject(temp[i], { x: i }, { x: dictpermtemp1sorted[permtemp[i]] })
       }
       for (let i = left; i < right; i++){
         this.els[dictpermtemp1sorted[permtemp[i]]]=temp[i]
-        temp[i].setAttribute('fill-opacity',1)
         this.els[dictpermtemp1sorted[permtemp[i]]].setAttribute('x',`${this.itemOffsetWidth + dictpermtemp1sorted[permtemp[i]] * 24}px`)
       }
       this.state.perm=permtemp0.concat(permtemp1sorted).concat(permtemp2)
@@ -230,11 +238,8 @@ class App extends React.Component {
       this.scoreView.innerHTML = this.score
       this.inversionCountView.innerHTML = this.inversionCount
       
-        
-    this.setState({
-      operatingIndex: this.state.operatingIndex + 1,
-    })
-    if (this.state.playing && this.state.operatingIndex < this.state.operations.length) {
+      
+    if (this.state.playing && this.state.operatingIndex + 1 < this.state.m) {
       this.pending = setTimeout(this.forwardStep, wait)
     } else {
       this.pending = setTimeout(()=>{
@@ -245,6 +250,10 @@ class App extends React.Component {
       }, wait)
       this.setState({playing: false})
     }
+    this.setState({
+      operatingIndex: this.state.operatingIndex + 1,
+    })
+    
   }
 
   
