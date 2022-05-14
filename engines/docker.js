@@ -148,7 +148,7 @@ module.exports = ({id, code, stdinStream}) => new Promise((rootResolve) => {
 				resolve();
 			});
 
-			await runner.timeout(15000);
+			await runner.timeout(2000);
 
 			cleanup();
 		} catch (error) {
