@@ -43,7 +43,7 @@ $C_1\ C_2\ \ldots\ C_N$
 </pre>
 
 すべての入力は以下の制約を満たす。
-- $1 \leq N \leq 100$
+- $1 \leq N \leq 30$
 - $1 \leq K \leq \frac{N(N-1)}{2}$
 - $A_1,\ldots,A_N$は$1,\ldots,N$の順列
 - $1 \leq C_i \leq 100$  $(1 \leq i \leq N)$
