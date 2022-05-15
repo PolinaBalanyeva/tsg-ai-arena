@@ -1,14 +1,22 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const MarkdownIt = require('markdown-it');
-const Contest = require('../models/Contest');
-const User = require('../models/User');
-const Submission = require('../models/Submission');
-const contests = require('../contests');
+import Contest from '../models/Contest.js';
+import User from '../models/User.js';
+import Submission from '../models/Submission.js';
+import contests from '../contests/index.js';
+
+
+
+
 
 /*
  * Middleware for all /contest/:contest routes
  */
-module.exports.base = async (req, res, next) => {
+const base = async (req, res, next) => {
+
 	const contest = await Contest.findOne({id: req.params.contest});
+	
 
 	if (!contest) {
 		res.sendStatus(404);
@@ -24,7 +32,7 @@ module.exports.base = async (req, res, next) => {
  * GET /
  * Home page.
  */
-module.exports.index = async (req, res) => {
+const index = async (req, res) => {
 	const markdown = new MarkdownIt({
 		html: true
 	});
@@ -46,7 +54,7 @@ module.exports.index = async (req, res) => {
 	});
 };
 
-module.exports.postContest = async (req, res) => {
+const postContest = async (req, res) => {
 	if (!req.user.admin) {
 		res.sendStatus(403);
 		return;
@@ -62,7 +70,7 @@ module.exports.postContest = async (req, res) => {
 /*
  * GET /contest/:contest/admin
  */
-module.exports.getAdmin = async (req, res) => {
+const getAdmin = async (req, res) => {
 	if (!req.user.admin) {
 		res.sendStatus(403);
 		return;
@@ -75,3 +83,10 @@ module.exports.getAdmin = async (req, res) => {
 		users,
 	});
 };
+
+export default {
+	getAdmin,
+	postContest,
+	index,
+	base
+}

@@ -2,7 +2,7 @@
  * GET /login
  * Login page.
  */
-module.exports.getLogin = (req, res) => {
+const getLogin = (req, res) => {
 	if (req.user) {
 		res.redirect('/');
 		return;
@@ -16,7 +16,7 @@ module.exports.getLogin = (req, res) => {
  * GET /logout
  * Log out.
  */
-module.exports.logout = (req, res) => {
+const logout = (req, res) => {
 	req.logout();
 	res.redirect('/');
 };
@@ -25,8 +25,14 @@ module.exports.logout = (req, res) => {
  * GET /account
  * Profile page.
  */
-module.exports.getAccount = (req, res) => {
+const getAccount = (req, res) => {
 	res.render('account/profile', {
 		title: 'Account Management',
 	});
 };
+
+export default {
+	getAccount,
+	getLogin,
+	logout
+}

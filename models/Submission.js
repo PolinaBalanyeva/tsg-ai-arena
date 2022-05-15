@@ -1,3 +1,5 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const mongoose = require('mongoose');
 const moment = require('moment');
 const Prism = require('prismjs');
@@ -66,4 +68,4 @@ submissionSchema.methods.getHighlight = function() {
 
 const Submission = mongoose.model('Submission', submissionSchema);
 
-module.exports = Submission;
+export default Submission;

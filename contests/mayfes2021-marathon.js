@@ -1,3 +1,5 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const { stripIndents } = require('common-tags')
 const { sumBy } = require('lodash')
 
@@ -294,7 +296,7 @@ const judgeMatch = (results) => ({
   scores: [sumBy(results, ({ scores }) => scores[0])],
 })
 
-module.exports = {
+export default {
   parseInput,
   parseOutput,
   battler,

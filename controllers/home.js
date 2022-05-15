@@ -1,10 +1,11 @@
-const Contest = require('../models/Contest');
+import { nextTick } from 'process';
+import Contest from '../models/Contest.js';
 
 /*
  * GET /
  * Home page.
  */
-module.exports.index = async (req, res) => {
+const index = async (req, res) => {
 	const contests = await Contest.find()
 		.sort({_id: -1})
 		.exec();
@@ -14,3 +15,4 @@ module.exports.index = async (req, res) => {
 		contests,
 	});
 };
+export default {index,}

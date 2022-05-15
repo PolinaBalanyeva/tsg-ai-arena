@@ -1,5 +1,6 @@
 /* eslint array-plural/array-plural: off, no-nested-ternary: off */
-
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const seedrandom = require('seedrandom');
 const assert = require('assert');
 const range = require('lodash/range');
@@ -68,7 +69,6 @@ const deserialize = (stdin) => {
 	};
 };
 
-module.exports.deserialize = deserialize;
 
 const serialize = ({state, params}) => `${[
 	`${params.width} ${params.height}`,
@@ -276,7 +276,6 @@ const baseCase = () => {
 	return samples;
 };
 
-module.exports.serialize = serialize;
 
 const deltas = new Map([
 	['u', {x: 0, y: -1}],
@@ -596,7 +595,7 @@ const escapeCat = (state) => {
 	return `${id} ${direction}`;
 };
 
-module.exports.presets = {
+const presets = {
 	random: (stdin) => {
 		const {state} = deserialize(stdin);
 		let r = Math.floor(Math.random() * 4);
@@ -622,7 +621,7 @@ module.exports.presets = {
 	},
 };
 
-module.exports.battler = async (
+const battler = async (
 	execute,
 	params,
 	{onFrame = noop, initState} = {}
@@ -871,7 +870,7 @@ module.exports.battler = async (
 	};
 };
 
-module.exports.configs = [
+const configs = [
 	{
 		default: true,
 		id: 'default',
@@ -953,9 +952,7 @@ const matchConfigs = [
 		})),
 ];
 
-module.exports.matchConfigs = matchConfigs;
-
-module.exports.judgeMatch = (results) => {
+const judgeMatch = (results) => {
 	let score1 = 0;
 	let score2 = 0;
 	for (let i = 0; i < Math.floor(results.length / 2); i++) {
@@ -983,3 +980,13 @@ module.exports.judgeMatch = (results) => {
 		scores: [score1, score2],
 	};
 };
+
+export default {
+	deserialize,
+	serialize,
+	presets,
+	battler,
+	configs,
+	matchConfigs,
+	judgeMatch
+}

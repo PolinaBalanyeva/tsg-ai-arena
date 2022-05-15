@@ -1,3 +1,5 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const mongoose = require('mongoose');
 const moment = require('moment');
 
@@ -55,4 +57,4 @@ contestSchema.methods.spanText = function() {
 
 const Contest = mongoose.model('Contest', contestSchema);
 
-module.exports = Contest;
+export default Contest;

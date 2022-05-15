@@ -1,6 +1,6 @@
-const Turn = require('../models/Turn');
+import Turn from '../models/Turn.js';
 
-module.exports.getTurn = async (req, res) => {
+const getTurn = async (req, res) => {
 	const _id = req.params.turn;
 
 	const turn = await Turn.findOne({_id})
@@ -31,3 +31,5 @@ module.exports.getTurn = async (req, res) => {
 		turn,
 	});
 };
+
+export default {getTurn,}

@@ -1,4 +1,6 @@
 /* eslint-env browser */
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const Docker = require('dockerode');
 const assert = require('assert');
 const Promise = require('bluebird');
@@ -6,8 +8,8 @@ const path = require('path');
 const tmp = require('tmp');
 const stream = require('stream');
 const {stripIndent} = require('common-tags');
-const {getCodeLimit, Deferred, createLineDrainer} = require('../lib/utils.js');
-const logger = require('../lib/logger.js');
+import {getCodeLimit, Deferred, createLineDrainer} from '../lib/utils.js';
+import logger from '../lib/logger.js';
 const fs = Promise.promisifyAll(require('fs'));
 
 const docker = new Docker();
@@ -21,7 +23,7 @@ class MemoryLimitExceededError extends Error {
 	}
 }
 
-module.exports = ({id, code, stdinStream}) => new Promise((rootResolve) => {
+const dockerExport = ({id, code, stdinStream}) => new Promise((rootResolve) => {
 	assert(typeof id === 'string');
 	assert(Buffer.isBuffer(code));
 	assert(code.length <= getCodeLimit(id));
@@ -177,61 +179,62 @@ module.exports = ({id, code, stdinStream}) => new Promise((rootResolve) => {
 	})();
 });
 
-if (require.main === module) {
-	const runner = module.exports;
+const runner = dockerExport;
 
-	(async () => {
-		const stdinStream = new stream.PassThrough();
+(async () => {
+	const stdinStream = new stream.PassThrough();
 
-		const {stdoutStream, stderrStream, deferred} = await runner({
-			id: 'cpp-clang',
-			code: Buffer.from(stripIndent`
-				#include <stdio.h>
+	const {stdoutStream, stderrStream, deferred} = await runner({
+		id: 'cpp-clang',
+		code: Buffer.from(stripIndent`
+			#include <stdio.h>
 
-				int main() {
-					int n;
+			int main() {
+				int n;
 
-					while (scanf("%d", &n) != EOF) {
-						fprintf(stdout, "%d\\n", n * 2);
-						fflush(stdout);
-					}
-
-					return 0;
+				while (scanf("%d", &n) != EOF) {
+					fprintf(stdout, "%d\\n", n * 2);
+					fflush(stdout);
 				}
-			`),
-			stdinStream,
-		});
 
-		stderrStream.pipe(process.stderr);
+				return 0;
+			}
+		`),
+		stdinStream,
+	});
 
-		const drain = createLineDrainer(stdoutStream);
+	stderrStream.pipe(process.stderr);
 
-		let n = 1;
+	const drain = createLineDrainer(stdoutStream);
 
-		while (n < 1000) {
-			const input = `${(n * 2).toString()}\n`;
+	let n = 1;
 
-			const inputStart = Date.now();
+	while (n < 1000) {
+		const input = `${(n * 2).toString()}\n`;
 
-			stdinStream.write(input);
-			console.log('input:', input.trim());
+		const inputStart = Date.now();
 
-			const output = await drain();
+		stdinStream.write(input);
+		console.log('input:', input.trim());
 
-			const inputEnd = Date.now();
+		const output = await drain();
 
-			console.log(
-				'output:',
-				output.trim(),
-				`(duration: ${inputEnd - inputStart}ms)`,
-			);
-			n = parseInt(output);
-		}
+		const inputEnd = Date.now();
 
-		deferred.promise.then(({duration}) => {
-			console.log(`total duration: ${duration}ms`);
-		});
+		console.log(
+			'output:',
+			output.trim(),
+			`(duration: ${inputEnd - inputStart}ms)`,
+		);
+		n = parseInt(output);
+	}
 
-		stdinStream.end();
-	})();
-}
+	deferred.promise.then(({duration}) => {
+		console.log(`total duration: ${duration}ms`);
+	});
+
+	stdinStream.end();
+})();
+
+
+export default dockerExport

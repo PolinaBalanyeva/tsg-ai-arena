@@ -1,11 +1,13 @@
 /* eslint no-loop-func: off, array-plural/array-plural: off */
 
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const flatten = require('lodash/flatten');
 const minBy = require('lodash/minBy');
 
 const SIZE = 9;
 
-module.exports.presets = {
+const presets = {
 	random: () => Math.floor(Math.random() * 4 + 1).toString(),
 	clever: (stdin) => {
 		const lines = stdin
@@ -59,7 +61,7 @@ module.exports.presets = {
 	},
 };
 
-module.exports.battler = async (execute) => {
+const battler = async (execute) => {
 	const field = new Array(SIZE).fill().map(() => new Array(SIZE).fill(0));
 
 	const state = {
@@ -212,7 +214,7 @@ module.exports.battler = async (execute) => {
 	};
 };
 
-module.exports.configs = [
+const configs = [
 	{
 		default: true,
 		id: 'default',
@@ -221,11 +223,19 @@ module.exports.configs = [
 	},
 ];
 
-module.exports.matchConfigs = [
+const matchConfigs = [
 	{
 		config: 'default',
 		players: [0, 1],
 	},
 ];
 
-module.exports.judgeMatch = (results) => results[0];
+const judgeMatch = (results) => results[0];
+
+export default {
+	presets,
+	battler,
+	configs,
+	matchConfigs,
+	judgeMatch
+}

@@ -1,6 +1,8 @@
 /*
  * Module dependencies.
  */
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
@@ -9,11 +11,10 @@ const compression = require('compression');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
-const chalk = require('chalk');
+import chalk from 'chalk';
 const errorHandler = require('errorhandler');
 const lusca = require('lusca');
-const dotenv = require('dotenv');
-const MongoStore = require('connect-mongo')(session);
+const MongoStore = require('connect-mongo');
 const flash = require('express-flash');
 const mongoose = require('mongoose');
 const passport = require('passport');
@@ -25,33 +26,35 @@ const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const Agenda = require('agenda');
 
+const __dirname = new URL(import.meta.url).pathname.split('/').slice(0,-1).join('/')
+
 /*
  * Load environment variables from .env file, where API keys and passwords are configured.
  */
-dotenv.config({path: '.env'});
+import 'dotenv/config';
 
 /*
  * Controllers (route handlers).
  */
-const homeController = require('./controllers/home');
-const userController = require('./controllers/user');
-const submissionController = require('./controllers/submission');
-const contestController = require('./controllers/contest');
-const battleController = require('./controllers/battle');
-const matchController = require('./controllers/match');
-const turnController = require('./controllers/turn');
+import homeController from './controllers/home.js';
+import userController from './controllers/user.js';
+import submissionController from './controllers/submission.js';
+import contestController from './controllers/contest.js';
+import battleController from './controllers/battle.js';
+import matchController from './controllers/match.js';
+import turnController from './controllers/turn.js';
 
 /*
  * Build-up Webpack compiler
  */
-const webpackConfigGenerator = require('./webpack.config.js');
+import webpackConfigGenerator from './webpack.config.js';
 const webpackConfig = webpackConfigGenerator({}, {mode: process.env.NODE_ENV});
 const compiler = webpack(webpackConfig);
 
 /*
  * API keys and Passport configuration.
  */
-const passportConfig = require('./config/passport');
+import passportConfig from './config/passport.js';
 
 const upload = multer();
 
@@ -59,7 +62,7 @@ const upload = multer();
  * Create Express server.
  */
 const app = express();
-const io = require('./lib/socket-io');
+import io from './lib/socket-io.js';
 
 /*
  * Connect to MongoDB.
@@ -84,7 +87,7 @@ const agenda = new Agenda({
 	},
 	processEvery: '10 seconds',
 });
-const jobs = require('./lib/jobs');
+import jobs from './lib/jobs.js';
 agenda.define('dequeue-battles', jobs.dequeueBattles);
 agenda.on('ready', () => {
 	agenda.every('1 minute', 'dequeue-battles');
@@ -121,8 +124,8 @@ app.use(
 		resave: true,
 		saveUninitialized: true,
 		secret: process.env.SESSION_SECRET,
-		store: new MongoStore({
-			url: process.env.MONGODB_URI || process.env.MONGOLAB_URI,
+		store: MongoStore.create({
+			mongoUrl: process.env.MONGODB_URI || process.env.MONGOLAB_URI,
 			autoReconnect: true,
 		}),
 	}),
@@ -172,48 +175,52 @@ router.get('/login', userController.getLogin);
 router.get('/logout', userController.logout);
 router.get(
 	'/account',
-	passportConfig.isAuthenticated,
-	userController.getAccount,
+		passportConfig.isAuthenticated,
+		userController.getAccount
 );
 router.get(
 	'/contests/:contest',
-	contestController.base,
-	contestController.index,
+		contestController.base,
+		contestController.index
 );
 router.get(
 	'/contests/:contest/submissions',
-	contestController.base,
-	submissionController.getSubmissions,
+		contestController.base,
+		submissionController.getSubmissions
+	,
 );
 router.get(
 	'/contests/:contest/submissions/:submission',
-	contestController.base,
-	submissionController.getSubmission,
+		contestController.base,
+		submissionController.getSubmission
 );
 router.get(
 	'/contests/:contest/battles',
-	contestController.base,
-	battleController.getBattles,
+		contestController.base,
+		battleController.getBattles,
 );
 router.post(
 	'/contests/:contest/battles',
-	contestController.base,
-	battleController.postBattle,
+	
+		contestController.base,
+		battleController.postBattle
 );
 router.get(
 	'/contests/:contest/battles/:battle',
-	contestController.base,
-	battleController.getBattle,
+	
+		contestController.base,
+		battleController.getBattle
 );
 router.get(
 	'/contests/:contest/battles/latest/visualizer',
+	
 	contestController.base,
-	battleController.getLatestVisualizer,
+	battleController.getLatestVisualizer
 );
 router.get(
 	'/contests/:contest/battles/:battle/visualizer',
 	contestController.base,
-	battleController.getBattleVisualizer,
+	battleController.getBattleVisualizer
 );
 router.get(
 	'/contests/:contest/matches',
@@ -251,7 +258,7 @@ router.post(
 	'/contests/:contest/submissions',
 	passportConfig.isAuthenticated,
 	contestController.base,
-	submissionController.postSubmission,
+		submissionController.postSubmission,
 );
 
 router.get('/submissions/:submission', submissionController.getOldSubmission);
@@ -288,8 +295,8 @@ const server = app.listen(app.get('port'), () => {
 		app.get('env'),
 	);
 	console.log('  Press CTRL-C to stop\n');
-});
+	});
 
 io.attach(server);
 
-module.exports = app;
+export default app;

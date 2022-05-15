@@ -1,10 +1,12 @@
 /* eslint array-plural/array-plural: off */
 
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const noop = require('lodash/noop');
 const chunk = require('lodash/chunk');
 const sumBy = require('lodash/sumBy');
 
-module.exports.presets = {};
+const presets = {};
 
 const initMaps = (height, width) => {
 	const field = Array(width * height).fill(0).map((index) => ({
@@ -14,7 +16,6 @@ const initMaps = (height, width) => {
 	return field;
 };
 
-module.exports.initMaps = initMaps;
 
 const normalize = (stdout) => {
 	const lines = stdout.toString().trim().split('\n')[0].split('');
@@ -36,7 +37,6 @@ const normalize = (stdout) => {
 	return moves;
 };
 
-module.exports.normalize = normalize;
 
 const deserialize = (stdin) => {
 	const lines = stdin.split('\n').filter((line) => line.length > 0);
@@ -66,20 +66,17 @@ const deserialize = (stdin) => {
 	};
 };
 
-module.exports.deserialize = deserialize;
 
 const serialize = ({state, params}) => `${[
 	`${params.height} ${params.width}`,
 	...chunk(state.field, params.width).map((line) => line.map((cell) => cell.num.toString()).join(' ')),
 ].join('\n')}\n`;
 
-module.exports.serialize = serialize;
 
 const isInside = (x, y, w, h) => x >= 0 && x < w && y >= 0 && y < h;
 
-module.exports.isInside = isInside;
 
-module.exports.battler = async (
+const battler = async (
 	execute,
 	params,
 	{onFrame = noop, initState} = {}
@@ -120,7 +117,7 @@ module.exports.battler = async (
 	};
 };
 
-module.exports.configs = [
+const configs = [
 	{
 		default: true,
 		id: 'tiny',
@@ -161,7 +158,7 @@ module.exports.configs = [
 ];
 
 
-module.exports.matchConfigs = [
+const matchConfigs = [
 	...Array(3)
 		.fill()
 		.map(() => ({
@@ -188,8 +185,21 @@ module.exports.matchConfigs = [
 		})),
 ];
 
-module.exports.judgeMatch = (results) => ({
+const judgeMatch = (results) => ({
 	result: results[0].result,
 	winner: results[0].winner,
 	scores: [sumBy(results, ({scores}) => scores[0])],
 });
+
+export default {
+	initMaps,
+	normalize,
+	deserialize,
+	serialize,
+	isInside,
+	presets,
+	battler,
+	configs,
+	matchConfigs,
+	judgeMatch
+}

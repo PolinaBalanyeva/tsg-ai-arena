@@ -1,6 +1,11 @@
+
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const mongoose = require('mongoose');
 const moment = require('moment');
-const contests = require('../contests');
+import contests from '../contests/index.js';
+
+
 
 const battleSchema = new mongoose.Schema(
 	{
@@ -63,4 +68,4 @@ battleSchema.methods.isViewableBy = function(user) {
 	);
 };
 
-module.exports = mongoose.model('Battle', battleSchema);
+export default mongoose.model('Battle', battleSchema);

@@ -1,9 +1,9 @@
-const Battle = require('../models/Battle');
-const Match = require('../models/Match');
-const Submission = require('../models/Submission');
-const runner = require('../lib/runner');
+import Battle from '../models/Battle.js';
+import Match from '../models/Match.js';
+import Submission from '../models/Submission.js';
+import runner from '../lib/runner.js';
 
-module.exports.getMatch = async (req, res) => {
+const getMatch = async (req, res) => {
 	const _id = req.params.match;
 
 	const match = await Match.findOne({_id})
@@ -39,7 +39,7 @@ module.exports.getMatch = async (req, res) => {
 	});
 };
 
-module.exports.postMatch = async (req, res) => {
+const postMatch = async (req, res) => {
 	try {
 		if (!req.contest.isOpen() && !req.user.admin) {
 			throw new Error('Competition has closed');
@@ -97,7 +97,7 @@ module.exports.postMatch = async (req, res) => {
 	}
 };
 
-module.exports.getMatches = async (req, res) => {
+const getMatches = async (req, res) => {
 	const matches = await Match.find({
 		contest: req.contest,
 	})
@@ -147,3 +147,9 @@ module.exports.getMatches = async (req, res) => {
 			(req.user.admin ? allSubmissions : presets.concat(mySubmissions)),
 	});
 };
+
+export default {
+	getMatch,
+	postMatch,
+	getMatches
+}

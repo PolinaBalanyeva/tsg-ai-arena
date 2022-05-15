@@ -1,12 +1,14 @@
-const Turn = require('../models/Turn');
-const Battle = require('../models/Battle');
-const Submission = require('../models/Submission');
-const runner = require('../lib/runner');
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+import Turn from '../models/Turn.js';
+import Battle from '../models/Battle.js';
+import Submission from '../models/Submission.js';
+import runner from '../lib/runner.js';
 const sample = require('lodash/sample');
 
-module.exports.getBattle = async (req, res) => {
+const getBattle = async (req, res) => {
 	const _id = req.params.battle;
-
+	
 	const battle = await Battle.findOne({_id})
 		.populate({
 			path: 'players',
@@ -42,7 +44,7 @@ module.exports.getBattle = async (req, res) => {
 	});
 };
 
-module.exports.postBattle = async (req, res) => {
+const postBattle = async (req, res) => {
 	try {
 		if (!req.contest.isOpen() && !req.user.admin) {
 			throw new Error('Competition has closed');
@@ -170,10 +172,10 @@ const getVisualizer = async (req, res, id) => {
 	});
 };
 
-module.exports.getBattleVisualizer = (req, res) => getVisualizer(req, res, req.params.battle);
-module.exports.getLatestVisualizer = (req, res) => getVisualizer(req, res, 'latest');
+const getBattleVisualizer = (req, res) => getVisualizer(req, res, req.params.battle);
+const getLatestVisualizer = (req, res) => getVisualizer(req, res, 'latest');
 
-module.exports.getBattles = async (req, res) => {
+const getBattles = async (req, res) => {
 	const battles = await Battle.find({
 		contest: req.contest,
 	})
@@ -224,3 +226,11 @@ module.exports.getBattles = async (req, res) => {
 		configs: req.contestData.configs,
 	});
 };
+
+export default {
+	getBattle,
+	postBattle,
+	getBattleVisualizer,
+	getLatestVisualizer,
+	getBattles
+}

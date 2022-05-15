@@ -1,7 +1,12 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const webpack = require('webpack');
 const path = require('path');
 
-module.exports = (env, argv = {}) => {
+const __dirname = new URL(import.meta.url).pathname.split('/').slice(0,-1).join('/')
+console.log(__dirname)
+
+const webpackConfigGenerator = (env, argv = {}) => {
 	const browsers = [
 		'last 2 chrome versions',
 		...(argv.mode === 'production'
@@ -49,7 +54,7 @@ module.exports = (env, argv = {}) => {
 		devtool:
 			argv.mode === 'production'
 				? 'source-map'
-				: 'cheap-module-eval-source-map',
+				: 'eval-cheap-module-source-map',
 		module: {
 			rules: [
 				{
@@ -71,14 +76,16 @@ module.exports = (env, argv = {}) => {
 				},
 				{
 					test: /\.s?css$/,
-					loaders: ['style-loader', 'css-loader', 'sass-loader'],
+					use: ['style-loader', 'css-loader', 'sass-loader'],
 				},
 			],
 		},
-		node: {
-			fs: 'empty',
-			net: 'empty',
-			tls: 'empty',
+		resolve: {
+			fallback:{
+				fs: 'empty',
+				net: 'empty',
+				tls: 'empty',
+			}
 		},
 		plugins: [
 			new webpack.HotModuleReplacementPlugin(),
@@ -88,3 +95,5 @@ module.exports = (env, argv = {}) => {
 		],
 	};
 };
+
+export default webpackConfigGenerator

@@ -1,10 +1,12 @@
 /* eslint array-plural/array-plural: off, no-nested-ternary: off */
 
 // title: iwashi harvest(iwashi収穫祭)
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const noop = require('lodash/noop');
 const sumBy = require('lodash/sumBy');
 const sample = require('lodash/sample');
-module.exports.presets = {};
+const presets = {};
 
 // convert player's output from str to obj
 // arg: player's output
@@ -35,7 +37,6 @@ const normalize = (stdout, params) => {
 	return moves;
 };
 
-module.exports.normalize = normalize;
 
 // make maps
 // arg: height, width and mode
@@ -98,7 +99,6 @@ const initMaps = (height, width, mode, wallRatio) => {
 	}
 };
 
-module.exports.initMaps = initMaps;
 
 // init iwashiがつちからはえてくるんだ
 // arg: maps, height, width, turns, and number of iwashi
@@ -132,7 +132,6 @@ const initIwashi = (maps, H, W, T, N) => {
 	return {iwashi, iwashiMap};
 };
 
-module.exports.initIwashi = initIwashi;
 
 // change position of player
 // arg: map of TSG, player data and move datum
@@ -146,7 +145,6 @@ const movePlayer = (maps, player, move) => {
 	return player;
 };
 
-module.exports.movePlayer = movePlayer;
 
 // iwashi moves.
 // arg: iwashiMap, map of TSG, player data, H and W.
@@ -219,7 +217,6 @@ const iwashiMove = (iwashiMap, maps, player, H, W) => {
 	return nextIwashiMap;
 };
 
-module.exports.iwashiMove = iwashiMove;
 
 // calculate current Score(this is called every turn)
 // arg: current iwashi map, player data, ,current score, iwashi data and current turn.
@@ -259,7 +256,6 @@ const calculateScore = (iwashiMap, player, score, iwashi, turn) => {
 	};
 };
 
-module.exports.calculateScore = calculateScore;
 
 const serialize = ({params, state}) => {
 	const head = [
@@ -301,9 +297,8 @@ const deserialize = (stdin) => {
 	};
 };
 
-module.exports.deserialize = deserialize;
 
-module.exports.battler = async (
+const battler = async (
 	execute,
 	params,
 	{onFrame = noop, initState} = {}
@@ -395,7 +390,7 @@ module.exports.battler = async (
 	};
 };
 
-module.exports.configs = [
+const configs = [
 	{
 		default: true,
 		id: 'tiny',
@@ -447,7 +442,7 @@ module.exports.configs = [
 	},
 ];
 
-module.exports.matchConfigs = [
+const matchConfigs = [
 	...Array(1)
 		.fill()
 		.map(() => ({
@@ -474,8 +469,24 @@ module.exports.matchConfigs = [
 		})),
 ];
 
-module.exports.judgeMatch = (results) => ({
+const judgeMatch = (results) => ({
 	result: results[0].result,
 	winner: results[0].winner,
 	scores: [sumBy(results, ({scores}) => scores[0])],
 });
+
+export default {
+	deserialize,
+	serialize,
+	calculateScore,
+	normalize,
+	initIwashi,
+	initMaps,
+	iwashiMove,
+	movePlayer,
+	presets,
+	battler,
+	configs,
+	matchConfigs,
+	judgeMatch
+}

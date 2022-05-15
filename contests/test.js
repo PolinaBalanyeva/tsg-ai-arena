@@ -1,7 +1,9 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const assert = require('assert');
 const countBy = require('lodash/countBy');
 
-module.exports.presets = {
+const presets = {
 	random: () => (Math.floor(Math.random() * 3) + 1).toString(),
 	clever: (stdin) => {
 		const stones = parseInt(stdin);
@@ -20,9 +22,8 @@ const normalize = (stdout) => {
 	return answer;
 };
 
-module.exports.normalize = normalize;
 
-module.exports.battler = async (execute, params) => {
+const battler = async (execute, params) => {
 	const state = {
 		stones: params.stones,
 		turn: 0,
@@ -46,7 +47,7 @@ module.exports.battler = async (execute, params) => {
 	};
 };
 
-module.exports.configs = [
+const configs = [
 	{
 		default: true,
 		id: 'small',
@@ -71,7 +72,7 @@ module.exports.configs = [
 	},
 ];
 
-module.exports.matchConfigs = [
+const matchConfigs = [
 	{
 		config: 'small',
 		players: [0, 1],
@@ -86,7 +87,7 @@ module.exports.matchConfigs = [
 	},
 ];
 
-module.exports.judgeMatch = (results) => {
+const judgeMatch = (results) => {
 	const wins = [0, 1].map((player) => countBy(results, (result) => result.winner === player));
 	assert(wins[0] !== wins[1]);
 
@@ -95,3 +96,12 @@ module.exports.judgeMatch = (results) => {
 		winner: wins[0] > wins[1] ? 0 : 1,
 	};
 };
+
+export default {
+	normalize,
+	presets,
+	battler,
+	configs,
+	matchConfigs,
+	judgeMatch
+}

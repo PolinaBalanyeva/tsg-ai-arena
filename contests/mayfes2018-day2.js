@@ -1,5 +1,7 @@
 /* eslint array-plural/array-plural: off */
 
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const random = require('lodash/random');
 const transpose = require('lodash/unzip');
 const noop = require('lodash/noop');
@@ -12,7 +14,6 @@ const serialize = (state) => [state.turns, ...transpose(state.field).map((row) =
 	'\n'
 );
 
-module.exports.serialize = serialize;
 
 const deserialize = (stdin) => {
 	const lines = stdin.split('\n');
@@ -27,9 +28,8 @@ const deserialize = (stdin) => {
 	};
 };
 
-module.exports.deserialize = deserialize;
 
-module.exports.presets = {
+const presets = {
 	random: () => `${random(1, SIZE)} ${random(1, SIZE)} ${random(0, 1)}`,
 	fill: (input) => {
 		const state = deserialize(input);
@@ -46,7 +46,7 @@ module.exports.presets = {
 	},
 };
 
-module.exports.battler = async (execute, params, {onFrame = noop, initState} = {}) => {
+const battler = async (execute, params, {onFrame = noop, initState} = {}) => {
 	const initialState = initState || {
 		turns: 0,
 		field: Array(SIZE)
@@ -207,7 +207,7 @@ module.exports.battler = async (execute, params, {onFrame = noop, initState} = {
 	};
 };
 
-module.exports.configs = [
+const configs = [
 	{
 		default: true,
 		id: 'default',
@@ -216,11 +216,21 @@ module.exports.configs = [
 	},
 ];
 
-module.exports.matchConfigs = [
+const matchConfigs = [
 	{
 		config: 'default',
 		players: [0, 1],
 	},
 ];
 
-module.exports.judgeMatch = (results) => results[0];
+const judgeMatch = (results) => results[0];
+
+export default {
+	serialize,
+	deserialize,
+	presets,
+	battler,
+	configs,
+	matchConfigs,
+	judgeMatch
+}

@@ -1,3 +1,5 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const noop = require('lodash/noop');
 const minBy = require('lodash/minBy');
 
@@ -54,7 +56,6 @@ const serialize = (state) => `${[
 	),
 ].join('\n')}\n`;
 
-module.exports.serialize = serialize;
 
 const deserialize = (stdin) => {
 	const lines = stdin.split('\n').filter((line) => line.length > 0);
@@ -72,9 +73,8 @@ const deserialize = (stdin) => {
 	};
 };
 
-module.exports.deserialize = deserialize;
 
-module.exports.presets = {
+const presets = {
 	dumb: (stdin) => {
 		const state = deserialize(stdin);
 
@@ -104,7 +104,7 @@ module.exports.presets = {
 	},
 };
 
-module.exports.battler = async (execute, {onFrame = noop, initState} = {}) => {
+const battler = async (execute, {onFrame = noop, initState} = {}) => {
 	const initialState = initState || {
 		frames: 0,
 		balls: Array(7)
@@ -213,7 +213,7 @@ module.exports.battler = async (execute, {onFrame = noop, initState} = {}) => {
 	};
 };
 
-module.exports.configs = [
+const configs = [
 	{
 		default: true,
 		id: 'default',
@@ -222,11 +222,21 @@ module.exports.configs = [
 	},
 ];
 
-module.exports.matchConfigs = [
+const matchConfigs = [
 	{
 		config: 'default',
 		players: [0, 1],
 	},
 ];
 
-module.exports.judgeMatch = (results) => results[0];
+const judgeMatch = (results) => results[0];
+
+export default {
+	deserialize,
+	serialize,
+	presets,
+	battler,
+	configs,
+	matchConfigs,
+	judgeMatch
+}

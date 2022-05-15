@@ -1,3 +1,5 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const bcrypt = require('bcrypt-nodejs');
 const crypto = require('crypto');
 const mongoose = require('mongoose');
@@ -43,7 +45,7 @@ userSchema.pre('save', async function(next) {
 				resolve(dSalt);
 			}
 		});
-	});
+	}).catch((code) => { console.error("error:" + code); });
 
 	const hash = await new Promise((resolve, reject) => {
 		bcrypt.hash(this.password, salt, null, (error, dHash) => {
@@ -53,7 +55,7 @@ userSchema.pre('save', async function(next) {
 				resolve(dHash);
 			}
 		});
-	});
+	}).catch((code) => { console.error("error:" + code); });
 
 	this.password = hash;
 	next();
@@ -118,4 +120,4 @@ userSchema.methods.gravatar = function(size = 200) {
 
 const User = mongoose.model('User', userSchema);
 
-module.exports = User;
+export default User;

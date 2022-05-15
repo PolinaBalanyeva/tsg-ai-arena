@@ -1,3 +1,5 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const clamp = require('lodash/clamp');
 const shuffle = require('lodash/shuffle');
 const chunk = require('lodash/chunk');
@@ -6,7 +8,7 @@ const noop = require('lodash/noop');
 const flatten = require('lodash/flatten');
 const sumBy = require('lodash/sumBy');
 
-module.exports.presets = {};
+const presets = {};
 
 const normalize = (stdout) => {
 	const lines = stdout.toString().trim().split('\n');
@@ -30,7 +32,6 @@ const normalize = (stdout) => {
 	return turns;
 };
 
-module.exports.normalize = normalize;
 
 const moveDrop = (drops, rawX, rawY, move, {width, height}) => {
 	let x = rawX - 1;
@@ -62,7 +63,6 @@ const moveDrop = (drops, rawX, rawY, move, {width, height}) => {
 	};
 };
 
-module.exports.moveDrop = moveDrop;
 
 const calculateScore = (rawDrops, {width, height}) => {
 	const chunkSizes = [];
@@ -107,8 +107,6 @@ const calculateScore = (rawDrops, {width, height}) => {
 	return Math.sqrt(meanBy(chunkSizes, (n) => n * n));
 };
 
-module.exports.calculateScore = calculateScore;
-
 const serialize = ({params, state}) => (
 	`${[
 		`${params.height} ${params.width} ${params.turns} ${params.moves}`,
@@ -132,9 +130,8 @@ const deserialize = (stdin) => {
 	};
 };
 
-module.exports.deserialize = deserialize;
 
-module.exports.battler = async (execute, params, {onFrame = noop, initState} = {}) => {
+const battler = async (execute, params, {onFrame = noop, initState} = {}) => {
 	const count = params.width * params.height;
 	const initialState = initState || {
 		drops: shuffle(Array(count).fill().map((_, i) => (
@@ -170,7 +167,7 @@ module.exports.battler = async (execute, params, {onFrame = noop, initState} = {
 	};
 };
 
-module.exports.configs = [
+const configs = [
 	{
 		default: true,
 		id: 'small',
@@ -204,7 +201,7 @@ module.exports.configs = [
 	},
 ];
 
-module.exports.matchConfigs = [
+const matchConfigs = [
 	...Array(5).fill().map(() => ({
 		config: 'small',
 		players: [0],
@@ -219,8 +216,20 @@ module.exports.matchConfigs = [
 	})),
 ];
 
-module.exports.judgeMatch = (results) => ({
+const judgeMatch = (results) => ({
 	result: results[0].result,
 	winner: results[0].winner,
 	scores: [sumBy(results, ({scores}) => scores[0])],
 });
+
+export default {
+	normalize,
+	moveDrop,
+	calculateScore,
+	deserialize,
+	presets,
+	battler,
+	configs,
+	matchConfigs,
+	judgeMatch
+}

@@ -1,11 +1,13 @@
 /* eslint array-plural/array-plural: off */
 
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const noop = require('lodash/noop');
 const sumBy = require('lodash/sumBy');
 const isEqual = require('lodash/isEqual');
 const bigRat = require('big-rational');
 
-module.exports.presets = {};
+const presets = {};
 
 const initSeqs = (length, upper_bound) => {
 	const usedNumbers = new Set();
@@ -23,21 +25,18 @@ const initSeqs = (length, upper_bound) => {
 	return sequence;
 };
 
-module.exports.initSeqs = initSeqs;
 
 const getUsedNum = (stdout) => {
 	const usedNum = stdout.toString().trim().split('\n')[0].replace(/[+\-*/ ()]+/g, ' ').replace(/\s+/g, ' ').trim().split(' ').map((token) => parseInt(token)).sort();
 	return usedNum;
 };
 
-module.exports.getUsedNum = getUsedNum;
 
 const normalize = (stdout) => {
 	const infixFormula = stdout.toString().trim().replace(/\s*([+\-*/()])\s*/g, '$1').replace(/ +/g, '^').replace(/[+\-*/^()]/g, ' $& ').replace(/\s+/g, ' ').trim().split(' ');
 	return infixFormula;
 };
 
-module.exports.normalize = normalize;
 
 const deserialize = (stdin) => {
 	const lines = stdin.split('\n').filter((line) => line.length > 0);
@@ -55,14 +54,12 @@ const deserialize = (stdin) => {
 	};
 };
 
-module.exports.deserialize = deserialize;
 
 const serialize = ({state, params}) => `${[
 	`${params.length}`,
 	state.sequence.map((cell) => cell.num.toString()).join(' '),
 ].join('\n')}\n`;
 
-module.exports.serialize = serialize;
 
 const parse = (infixFormula) => {
 	const operatorStack = [];
@@ -143,7 +140,6 @@ throw new Error('InvalidFormula');
 	return operandStack.pop();
 };
 
-module.exports.parse = parse;
 
 const evaluate = (syntaxTree) => {
 	switch (syntaxTree.type) {
@@ -177,7 +173,6 @@ throw new Error('DivisionByZero');
 	}
 };
 
-module.exports.evaluate = evaluate;
 
 const myLog10 = (bigRatio) => {
 	const sign = bigRatio.lt(1);
@@ -190,9 +185,8 @@ const myLog10 = (bigRatio) => {
 	return Math.log10(bigRatio) - (sign ? intLog : -intLog);
 };
 
-module.exports.myLog10 = myLog10;
 
-module.exports.battler = async (
+const battler = async (
 	execute,
 	params,
 	{onFrame = noop, initState} = {},
@@ -229,7 +223,7 @@ module.exports.battler = async (
 	};
 };
 
-module.exports.configs = [
+const configs = [
 	{
 		default: true,
 		id: 'baby',
@@ -270,7 +264,7 @@ module.exports.configs = [
 ];
 
 
-module.exports.matchConfigs = [
+const matchConfigs = [
 	...Array(1)
 		.fill()
 		.map(() => ({
@@ -297,8 +291,24 @@ module.exports.matchConfigs = [
 		})),
 ];
 
-module.exports.judgeMatch = (results) => ({
+const judgeMatch = (results) => ({
 	result: results[0].result,
 	winner: results[0].winner,
 	scores: [sumBy(results, ({scores}) => scores[0])],
 });
+
+export default {
+	deserialize,
+	serialize,
+	initSeqs,
+	getUsedNum,
+	normalize,
+	parse,
+	evaluate,
+	myLog10,
+	presets,
+	battler,
+	configs,
+	matchConfigs,
+	judgeMatch
+}

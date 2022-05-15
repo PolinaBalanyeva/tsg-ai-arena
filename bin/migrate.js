@@ -1,12 +1,16 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
-const Contest = require('../models/Contest');
-const User = require('../models/User');
-const Battle = require('../models/Battle');
-const Match = require('../models/Match');
-const Submission = require('../models/Submission');
-const Turn = require('../models/Turn');
+import Contest from '../models/Contest.js';
+import User from '../models/User.js';
+import Battle from '../models/Battle.js';
+import Match from '../models/Match.js';
+import Submission from '../models/Submission.js';
+import Turn from '../models/Turn.js';
+
+const __dirname = new URL(import.meta.url).pathname.split('/').slice(0,-1).join('/')
 
 mongoose.Promise = global.Promise;
 
@@ -55,7 +59,7 @@ mongoose.Promise = global.Promise;
 			throw err;
 		}
 		console.log('inserting succeeded');
-	});
+	}).clone();
 
 	mongoose.connection.close();
-})();
+})().catch((code) => { console.error("error:" + code); });

@@ -1,5 +1,7 @@
 /* eslint array-plural/array-plural: off */
 // 
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const {stripIndent} = require('common-tags');
 const noop = require('lodash/noop');
 const sumBy = require('lodash/sumBy');
@@ -8,12 +10,10 @@ const bigRat = require('big-rational');
 const { isInteger } = require('lodash');
 const { match } = require('sinon');
 
-module.exports.presets = {};
+const presets = {};
 
 const BOARD_WIDTH = 4000;
-module.exports.BOARD_WIDTH = BOARD_WIDTH;
 const BOARD_HEIGHT = 4000;
-module.exports.BOARD_HEIGHT = BOARD_HEIGHT;
 const generateBoard = (length, minCost, maxCost) => {
 	const getRandomInt = (min, max) => {
 		return Math.round(
@@ -60,7 +60,6 @@ const parseInput = (stdin) => {
 	});
 };
 
-module.exports.parseInput = parseInput;
 
 const parseOutput = (stdout, numTower) => {
 	const lines = stdout.toString().split('\n');
@@ -92,7 +91,6 @@ const parseOutput = (stdout, numTower) => {
 	return operations;
 };
 
-module.exports.parseOutput = parseOutput;
 
 const normSq = (tw1, tw2) => {
 	const dx = BigInt(tw2.x - tw1.x);
@@ -100,10 +98,8 @@ const normSq = (tw1, tw2) => {
 	return dx * dx + dy * dy;
 };
 
-module.exports.normSq = normSq;
 
 const WORST_SCORE = 32 * (10 ** 9);
-module.exports.WORST_SCORE = WORST_SCORE;
 
 const operate = (towers, op, time) => {
 	const tower = towers[op.id - 1];
@@ -134,7 +130,6 @@ const operate = (towers, op, time) => {
 	};
 };
 
-module.exports.operate = operate;
 
 const calcScore = (towers, operations) => {
 	let total = BigInt(0);
@@ -149,30 +144,26 @@ const calcScore = (towers, operations) => {
 		return WORST_SCORE;
 };
 
-module.exports.calcScore = calcScore;
 
 const getUsedNum = (stdout) => {
 	const usedNum = stdout.toString().trim().split('\n')[0].replace(/[+\-*/ ()]+/g, ' ').replace(/\s+/g, ' ').trim().split(' ').map((token) => parseInt(token)).sort();
 	return usedNum;
 };
 
-module.exports.getUsedNum = getUsedNum;
 
 const normalize = (stdout) => {
 	const infixFormula = stdout.toString().trim().replace(/\s*([+\-*/()])\s*/g, '$1').replace(/ +/g, '^').replace(/[+\-*/^()]/g, ' $& ').replace(/\s+/g, ' ').trim().split(' ');
 	return infixFormula;
 };
 
-module.exports.normalize = normalize;
 
 const serialize = ({state, params}) => `${params.length}\n` +
 	state.sequence.map((tower) => tower.x.toString() + ' ' + tower.y.toString() + ' ' + tower.cost.toString()).join('\n') + '\n';
 
-module.exports.serialize = serialize;
 
 const SMALL_STATIC_INPUT = "20\n-1695 514 334\n-201 974 555\n-1669 -554 666\n-1042 -1750 773\n162 248 889\n-446 1066 515\n-820 -1160 167\n1974 298 523\n-1173 -319 32\n-984 1720 742\n560 -1862 606\n-1074 1733 268\n-214 176 195\n432 1743 468\n1515 -543 262\n-1074 1918 108\n1169 171 896\n-1335 -961 488\n-1888 590 294\n1606 169 409\n";
 
-module.exports.battler = async (
+const battler = async (
 	execute,
 	params,
 	{onFrame = noop, initState} = {},
@@ -209,7 +200,7 @@ module.exports.battler = async (
 	}
 };
 
-module.exports.configs = [
+const configs = [
 	{
 		default: true,
 		id: 'small-static',
@@ -311,9 +302,8 @@ const matchConfigs = [
 			players: [0],
 		})),
 ];
-module.exports.matchConfigs = matchConfigs;
 
-module.exports.judgeMatch = (results) => ({
+const judgeMatch = (results) => ({
 	result: results[0].result,
 	winner: results[0].winner,
 	scores: [sumBy(
@@ -321,3 +311,22 @@ module.exports.judgeMatch = (results) => ({
 		({scores}) => (scores[0] >= WORST_SCORE ? 0 : Math.round(10000 * (1 - Math.pow(scores[0]/WORST_SCORE, 0.25))))
 	)],
 });
+
+export default {
+	BOARD_HEIGHT,
+	BOARD_WIDTH,
+	parseInput,
+	parseOutput,
+	normSq,
+	WORST_SCORE,
+	operate,
+	calcScore,
+	normalize,
+	serialize,
+	presets,
+	battler,
+	configs,
+	matchConfigs,
+	judgeMatch
+}
+

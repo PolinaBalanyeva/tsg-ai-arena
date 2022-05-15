@@ -1,8 +1,10 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const _ = require('lodash');
 const passport = require('passport');
 const TwitterStrategy = require('passport-twitter').Strategy;
 
-const User = require('../models/User');
+import User from '../models/User.js';
 
 const colors = [
 	'#777777',
@@ -100,7 +102,7 @@ passport.use(
 /*
  * Login Required middleware.
  */
-module.exports.isAuthenticated = (req, res, next) => {
+const isAuthenticated = (req, res, next) => {
 	if (req.isAuthenticated()) {
 		next();
 		return;
@@ -111,7 +113,7 @@ module.exports.isAuthenticated = (req, res, next) => {
 /*
  * Authorization Required middleware.
  */
-module.exports.isAuthorized = (req, res, next) => {
+const isAuthorized = (req, res, next) => {
 	const provider = req.path.split('/').slice(-1)[0];
 
 	if (_.find(req.user.tokens, {kind: provider})) {
@@ -121,3 +123,8 @@ module.exports.isAuthorized = (req, res, next) => {
 
 	res.redirect(`/auth/${provider}`);
 };
+
+export default {
+	isAuthenticated,
+	isAuthorized
+}

@@ -1,3 +1,5 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const mongoose = require('mongoose');
 const moment = require('moment');
 
@@ -28,4 +30,4 @@ turnSchema.methods.getSubmission = function() {
 	return this.battle.players[this.player];
 };
 
-module.exports = mongoose.model('Turn', turnSchema);
+export default mongoose.model('Turn', turnSchema);

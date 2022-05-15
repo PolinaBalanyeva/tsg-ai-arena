@@ -1,9 +1,11 @@
-const Submission = require('../models/Submission');
-const User = require('../models/User');
-const Battle = require('../models/Battle');
-const Match = require('../models/Match');
-const runner = require('../lib/runner');
-const {getCodeLimit, transaction} = require('../lib/utils');
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+import Submission from '../models/Submission.js';
+import User from '../models/User.js';
+import Battle from '../models/Battle.js';
+import Match from '../models/Match.js';
+import runner from '../lib/runner.js';
+import {getCodeLimit, transaction} from '../lib/utils.js';
 const assert = require('assert');
 const concatStream = require('concat-stream');
 const qs = require('querystring');
@@ -11,7 +13,7 @@ const qs = require('querystring');
 /*
  * GET /submissions
  */
-module.exports.getSubmissions = async (req, res) => {
+const getSubmissions = async (req, res) => {
 	const query = {
 		contest: req.contest,
 		isPreset: false,
@@ -57,8 +59,9 @@ module.exports.getSubmissions = async (req, res) => {
 /*
  * GET /submissions/:submission
  */
-module.exports.getSubmission = async (req, res) => {
+const getSubmission = async (req, res) => {
 	const _id = req.params.submission;
+	console.log(_id)
 
 	const submission = await Submission.findOne({_id})
 		.populate('user')
@@ -92,7 +95,7 @@ module.exports.getSubmission = async (req, res) => {
 	});
 };
 
-module.exports.postSubmission = async (req, res) => {
+const postSubmission = async (req, res) => {
 	try {
 		if (!req.contest.isOpen() && !req.user.admin) {
 			throw new Error('Competition has closed');
@@ -182,6 +185,7 @@ module.exports.postSubmission = async (req, res) => {
 		});
 		await match.save();
 
+
 		for (const [index, matchConfig] of req.contestData.matchConfigs.entries()) {
 			const config = req.contestData.configs.find(({id}) => matchConfig.config === id);
 
@@ -202,7 +206,7 @@ module.exports.postSubmission = async (req, res) => {
 	}
 };
 
-module.exports.getOldSubmission = async (req, res) => {
+const getOldSubmission = async (req, res) => {
 	const _id = req.params.submission;
 
 	const submission = await Submission.findOne({_id})
@@ -218,3 +222,10 @@ module.exports.getOldSubmission = async (req, res) => {
 		`/contests/${submission.contest.id}/submissions/${submission._id}`
 	);
 };
+
+export default {
+	getSubmission,
+	getSubmissions,
+	postSubmission,
+	getOldSubmission
+}
